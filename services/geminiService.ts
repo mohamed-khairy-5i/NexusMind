@@ -52,14 +52,13 @@ const responseSchema = {
 
 let ai: GoogleGenAI | null = null;
 
-// Lazily initialize the Gemini client to avoid crashing on load if the API key isn't set.
+// Lazily initialize the Gemini client.
 const getAiClient = (): GoogleGenAI => {
     if (ai) {
         return ai;
     }
 
-    // Safely access the API key to prevent "process is not defined" errors in browser environments.
-    const API_KEY = typeof process !== 'undefined' ? process.env.API_KEY : undefined;
+    const API_KEY = process.env.API_KEY;
 
     if (!API_KEY) {
         throw new Error("API_KEY environment variable is not set. Please configure it in your deployment environment.");

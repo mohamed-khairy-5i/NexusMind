@@ -1,12 +1,12 @@
 import React, { memo, useState, useEffect, useRef } from 'react';
 import { Handle, Position, NodeProps } from 'reactflow';
 
-interface CustomNodeProps extends NodeProps {
+interface CustomNodeProps extends NodeProps<{ label: string }> {
   onLabelChange: (id: string, label: string) => void;
 }
 
-// FIX: Changed component definition to directly type props, resolving issue with props from extended interface not being recognized during destructuring.
-const CustomNode = ({ id, data, isConnectable, onLabelChange }: CustomNodeProps) => {
+// FIX: Switched to React.FC and specified the data type in NodeProps to fix an issue where properties from the extended NodeProps interface were not being recognized.
+const CustomNode: React.FC<CustomNodeProps> = ({ id, data, isConnectable, onLabelChange }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [label, setLabel] = useState(data.label);
   const inputRef = useRef<HTMLInputElement>(null);
