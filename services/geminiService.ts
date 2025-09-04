@@ -50,19 +50,32 @@ const responseSchema = {
   required: ['root'],
 };
 
+let ai: GoogleGenAI | null = null;
+
+// Lazily initialize the Gemini client to avoid crashing on load if the API key isn't set.
+const getAiClient = (): GoogleGenAI => {
+    if (ai) {
+        return ai;
+    }
+
+    // Safely access the API key to prevent "process is not defined" errors in browser environments.
+    const API_KEY = typeof process !== 'undefined' ? process.env.API_KEY : undefined;
+
+    if (!API_KEY) {
+        throw new Error("API_KEY environment variable is not set. Please configure it in your deployment environment.");
+    }
+
+    ai = new GoogleGenAI({ apiKey: API_KEY });
+    return ai;
+};
+
 export const generateMindMap = async (topic: string): Promise<MindMapResponse> => {
-  const API_KEY = process.env.API_KEY;
-
-  if (!API_KEY) {
-    throw new Error("API_KEY environment variable is not set. Please configure it in your deployment environment.");
-  }
-
-  const ai = new GoogleGenAI({ apiKey: API_KEY });
-
   try {
+    const aiClient = getAiClient();
+    
     const prompt = `Based on the central topic "${topic}", generate a structured mind map. Provide a root node with several main branches (children), and each main branch should have its own sub-branches (children). Format the output as a JSON object that adheres to the provided schema. The language of the output should be the same as the topic provided.`;
     
-    const response = await ai.models.generateContent({
+    const response = await aiClient.models.generateContent({
       model: "gemini-2.5-flash",
       contents: prompt,
       config: {
@@ -83,6 +96,7 @@ export const generateMindMap = async (topic: string): Promise<MindMapResponse> =
 
   } catch (error) {
     console.error("Error generating mind map:", error);
-    throw new Error("Failed to generate mind map. Please check the console for details.");
+    // Re-throw the original error to be handled by the UI component, which will display the message.
+    throw error;
   }
 };
