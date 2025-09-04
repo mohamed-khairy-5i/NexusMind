@@ -5,7 +5,8 @@ interface CustomNodeProps extends NodeProps {
   onLabelChange: (id: string, label: string) => void;
 }
 
-const CustomNode: React.FC<CustomNodeProps> = ({ id, data, isConnectable, onLabelChange }) => {
+// FIX: Changed component definition to directly type props, resolving issue with props from extended interface not being recognized during destructuring.
+const CustomNode = ({ id, data, isConnectable, onLabelChange }: CustomNodeProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [label, setLabel] = useState(data.label);
   const inputRef = useRef<HTMLInputElement>(null);

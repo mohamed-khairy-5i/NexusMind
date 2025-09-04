@@ -2,14 +2,6 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { MindMapResponse } from '../types';
 
-const API_KEY = process.env.API_KEY;
-
-if (!API_KEY) {
-  console.error("API_KEY environment variable is not set.");
-}
-
-const ai = new GoogleGenAI({ apiKey: API_KEY });
-
 const mindMapNodeSchema = {
   type: Type.OBJECT,
   properties: {
@@ -59,6 +51,14 @@ const responseSchema = {
 };
 
 export const generateMindMap = async (topic: string): Promise<MindMapResponse> => {
+  const API_KEY = process.env.API_KEY;
+
+  if (!API_KEY) {
+    throw new Error("API_KEY environment variable is not set. Please configure it in your deployment environment.");
+  }
+
+  const ai = new GoogleGenAI({ apiKey: API_KEY });
+
   try {
     const prompt = `Based on the central topic "${topic}", generate a structured mind map. Provide a root node with several main branches (children), and each main branch should have its own sub-branches (children). Format the output as a JSON object that adheres to the provided schema. The language of the output should be the same as the topic provided.`;
     
