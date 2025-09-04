@@ -52,6 +52,11 @@ const responseSchema = {
 
 let ai: GoogleGenAI | null = null;
 
+export const isApiKeyAvailable = (): boolean => {
+    // This check is crucial for providing early feedback to the user in the UI.
+    return !!process.env.API_KEY;
+};
+
 // Lazily initialize the Gemini client.
 const getAiClient = (): GoogleGenAI => {
     if (ai) {

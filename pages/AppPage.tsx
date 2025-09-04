@@ -1,7 +1,8 @@
+
 import React, { useState, useCallback, useEffect } from 'react';
 import { Node, Edge, Position } from 'reactflow';
 import { MindMapResponse, MindMapDataNode } from '../types';
-import { generateMindMap } from '../services/geminiService';
+import { generateMindMap, isApiKeyAvailable } from '../services/geminiService';
 import TopicForm from '../components/TopicForm';
 import MindMap from '../components/MindMap';
 import Loader from '../components/Loader';
@@ -124,6 +125,16 @@ const layoutNodes = (nodes: Node[], edges: Edge[]): Node[] => {
     return Array.from(laidOutNodes.values());
 };
 
+const ApiConfigurationBanner: React.FC = () => (
+    <div className="bg-red-900/50 border border-red-500 text-red-300 px-4 py-3 rounded-lg text-center max-w-2xl mx-auto" role="alert">
+        <strong className="font-bold">Configuration Required: </strong>
+        <span className="block sm:inline">
+            The API Key is not set. Please configure it in your deployment environment to enable mind map generation.
+        </span>
+    </div>
+);
+
+
 const AppPage: React.FC = () => {
   const { initialTopic, initialNodes, initialEdges } = getInitialState();
   const [topic, setTopic] = useState<string>(initialTopic);
@@ -131,6 +142,12 @@ const AppPage: React.FC = () => {
   const [edges, setEdges] = useState<Edge[]>(initialEdges);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [isApiConfigured, setIsApiConfigured] = useState<boolean>(true);
+
+  useEffect(() => {
+    // Check for API key on component mount
+    setIsApiConfigured(isApiKeyAvailable());
+  }, []);
   
   useEffect(() => {
     // Only save if there's a map on the canvas
@@ -197,8 +214,11 @@ const AppPage: React.FC = () => {
         topic={topic}
         setTopic={setTopic}
         onGenerate={handleGenerate}
-        isLoading={isLoading}
+        isLoading={isLoading || !isApiConfigured}
       />
+
+      {!isApiConfigured && <ApiConfigurationBanner />}
+
       {error && (
           <div className="bg-red-900/50 border border-red-500 text-red-300 px-4 py-3 rounded-lg text-center max-w-2xl mx-auto" role="alert">
               <strong className="font-bold">Error: </strong>

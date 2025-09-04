@@ -5,8 +5,8 @@ interface CustomNodeProps extends NodeProps<{ label: string }> {
   onLabelChange: (id: string, label: string) => void;
 }
 
-// FIX: Switched to React.FC and specified the data type in NodeProps to fix an issue where properties from the extended NodeProps interface were not being recognized.
-const CustomNode: React.FC<CustomNodeProps> = ({ id, data, isConnectable, onLabelChange }) => {
+// FIX: Correctly typed component props using inline type annotation instead of React.FC, which was not correctly inferring types from the extended NodeProps interface. This resolves errors where 'id', 'data', and 'isConnectable' were not found on the props type.
+const CustomNode = ({ id, data, isConnectable, onLabelChange }: CustomNodeProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [label, setLabel] = useState(data.label);
   const inputRef = useRef<HTMLInputElement>(null);
