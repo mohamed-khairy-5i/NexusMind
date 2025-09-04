@@ -1,0 +1,5 @@
+{
+  "name": "NexusMind",
+  "description": "An intelligent mind mapping tool that uses the Gemini API to automatically generate comprehensive mind maps from a single topic, visualized using an interactive and aesthetically pleasing interface.",
+  "requestFramePermissions": []
+}
