@@ -7,6 +7,7 @@ import TopicForm from '../components/TopicForm';
 import MindMap from '../components/MindMap';
 import Loader from '../components/Loader';
 import Welcome from '../components/Welcome';
+import ErrorDisplay from '../components/ErrorDisplay';
 
 const NODE_WIDTH = 180;
 const NODE_HEIGHT = 50;
@@ -219,22 +220,19 @@ const AppPage: React.FC = () => {
 
       {!isApiConfigured && <ApiConfigurationBanner />}
 
-      {error && (
-          <div className="bg-red-900/50 border border-red-500 text-red-300 px-4 py-3 rounded-lg text-center max-w-2xl mx-auto" role="alert">
-              <strong className="font-bold">Error: </strong>
-              <span className="block sm:inline">{error}</span>
-          </div>
-      )}
       <div className="relative flex-grow bg-gray-900 border-2 border-gray-700 rounded-2xl shadow-2xl shadow-indigo-900/20 overflow-hidden min-h-[60vh]">
-        {isLoading && <Loader />}
-        {nodes.length > 0 ? (
+        {isLoading ? (
+          <Loader />
+        ) : error ? (
+          <ErrorDisplay message={error} onRetry={handleGenerate} />
+        ) : nodes.length > 0 ? (
            <MindMap 
               nodes={nodes} 
               edges={edges} 
               setNodes={setNodes} 
               onNodeLabelChange={handleNodeLabelChange}
           />
-        ) : !isLoading && !error && (
+        ) : (
           <Welcome />
         )}
       </div>
